@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suvedha B — Interactive Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary': '#4f46e5', // Indigo-600
+                        'secondary': '#facc15', // Amber-400
+                        'sidebar': '#f9fafb', // Gray-50
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Ensuring a smooth vertical layout for mobile */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #E8D1A7; /* Gray-100 */
+        }
+        /* Style for the active navigation link */
+        .nav-link.active {
+            background-color: #DCDEDD; /* Indigo-100 for background */
+            color: #974315; /* Primary color for text */
+            font-weight: 400;
+            border-left: 4px solid #74483F; /* Primary color border */
+        }
+        /* Mobile layout: sidebar becomes a collapsible header */
+        @media (max-width: 1024px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 50;
+                height: auto;
+                padding-bottom: 0.5rem;
+                border-bottom: 1px solid #e5e7eb;
+            }
+            .main-content {
+                padding-top: 150px; /* Space for the fixed header/sidebar */
+            }
+            .brand-mobile-toggle {
+                display: flex !important;
+            }
+            .nav {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease-in-out;
+            }
+            .nav.open {
+                max-height: 700px; /* Adjust as needed */
+            }
+        }
+
+        /* Lightbox specific styles for zoom/pan */
+        #lightbox-image {
+            transform-origin: 0 0; /* Important for consistent zoom */
+            transition: transform 0.2s ease-out;
+            cursor: grab;
+        }
+        #lightbox-image.zoomed {
+            cursor: move;
+        }
+        
+        /* Thumbnail gallery styles */
+        .thumbnail-container {
+            /* Ensures images take full height of the container without distorting the grid */
+            height: 100%;
+            width: 100%;
+            display: block;
+            position: relative;
+        }
+        .thumbnail-image {
+            /* Object-fit is crucial for keeping the images neat and within bounds */
+            object-fit: cover; 
+            width: 100%;
+            height: 100%;
+            aspect-ratio: 16/9; /* Standard aspect ratio for a clean look */
+        }
+        
+        /* Removed custom animation keyframes to stop the typing and profile zoom effects */
+    </style>
+</head>
+<body>
+    <div id="app" class="lg:flex min-h-screen">
+        
+        <aside id="sidebar" class="sidebar lg:w-72 bg-sidebar shadow-xl lg:shadow-md lg:h-screen p-4 lg:sticky lg:top-0">
+            <div class="brand-container flex items-center justify-between lg:block">
+                <div class="brand">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-gray-800 py-4">Suvedha B</div>
+                    </div>
+                </div>
+                <button id="menu-toggle" class="lg:hidden p-2 rounded-md text-gray-700 bg-white hover:bg-gray-100">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+            </div>
+
+            <nav id="nav-links" class="nav mt-6 space-y-1">
+                <a data-target="home" class="nav-link block p-3 rounded-lg text-gray-700 hover:bg-indigo-50 transition duration-150 cursor-pointer active">About me</a>
+                <a data-target="education" class="nav-link block p-3 rounded-lg text-gray-700 hover:bg-indigo-50 transition duration-150 cursor-pointer">Education</a>
+                <a data-target="skills" class="nav-link block p-3 rounded-lg text-gray-700 hover:bg-indigo-50 transition duration-150 cursor-pointer">Skills</a>
+                <a data-target="internships" class="nav-link block p-3 rounded-lg text-gray-700 hover:bg-indigo-50 transition duration-150 cursor-pointer">Internships</a>
+                <a data-target="projects" class="nav-link block p-3 rounded-lg text-gray-700 hover:bg-indigo-50 transition duration-150 cursor-pointer">Projects</a>
+                <a data-target="research" class="nav-link block p-3 rounded-lg text-gray-700 hover:bg-indigo-50 transition duration-150 cursor-pointer">Research</a>
+                <a data-target="certifications" class="nav-link block p-3 rounded-lg text-gray-700 hover:bg-indigo-50 transition duration-150 cursor-pointer">Certifications & Online Courses</a> <a data-target="competitions" class="nav-link block p-3 rounded-lg text-gray-700 hover:bg-indigo-50 transition duration-150 cursor-pointer">Competitions</a>
+                <a data-target="achievements" class="nav-link block p-3 rounded-lg text-gray-700 hover:bg-indigo-50 transition duration-150 cursor-pointer">Achievements</a> <a data-target="participations" class="nav-link block p-3 rounded-lg text-gray-700 hover:bg-indigo-50 transition duration-150 cursor-pointer">Participations</a> <a data-target="hobbies" class="nav-link block p-3 rounded-lg text-gray-700 hover:bg-indigo-50 transition duration-150 cursor-pointer">Hobbies</a>
+                <a href="assets/resume.pdf" target="_blank" class="block p-3 rounded-lg text-primary hover:bg-indigo-100 transition duration-150 border-t mt-4 pt-4">Download Resume (PDF)</a>
+            </nav>
+        </aside>
+
+        <main id="main-content" class="main-content flex-1 p-6 lg:p-10">
+            <div id="breadcrumb" class="mb-6 flex items-center space-x-2 text-sm text-#E9CF99-500 hidden">
+                <button onclick="goBack()" class="flex items-center text-primary hover:text-#43231B-700 font-medium">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Back
+                </button>
+                <span id="current-category"></span>
+            </div>
+
+            <div id="content-container">
+                </div>
+        </main>
+    </div>
+
+    <div id="lightbox" class="fixed inset-0 z-[100] bg-black bg-opacity-90 hidden items-center justify-center p-4" onclick="closeLightbox(event)">
+        <div class="relative max-w-7xl max-h-full w-full">
+            <button class="absolute top-4 right-4 text-white hover:text-red-500 text-4xl font-light z-20" onclick="closeLightbox(event)">&times;</button>
+            
+            <div id="lightbox-image-container" class="relative overflow-hidden w-full h-full p-4 lg:p-8 flex items-center justify-center">
+                <img id="lightbox-image" src="" alt="Full-size image" class="max-h-[90vh] max-w-[90vw] object-contain">
+            </div>
+
+            <div id="lightbox-caption" class="text-center text-white p-4 absolute bottom-0 left-0 right-0 bg-black bg-opacity-50"></div>
+
+            <div class="absolute bottom-4 left-4 p-2 bg-black bg-opacity-50 text-white text-xs rounded-lg">
+                Scroll to Zoom, Click & Drag to Pan.
+            </div>
+        </div>
+    </div>
+    <script>
+        // --- Data Structure for Portfolio Content (Simulating a simple database) ---
+        const PORTFOLIO_DATA = {
+            // --- MODIFIED HOME SECTION (Fixed Image, No Animation) ---
+            home: {
+                title: "Welcome to My Dashboard",
+                type: "detail",
+                content: `
+                    <div class="bg-white p-8 lg:p-12 rounded-xl shadow-lg flex flex-col items-center text-center">
+                        
+                        <div class="w-56 h-56 lg:w-72 lg:h-72 rounded-full overflow-hidden border-4 border-primary shadow-2xl mb-8">
+                            <img src="assets/images/profile.JPEG" alt="Suvedha Profile" class="w-full h-full object-cover">
+                        </div>
+
+                        <h1 class="text-5xl lg:text-6xl font-extrabold text-gray-900 mb-2">Suvedha B</h1>
+                        
+                        <p class="text-xl lg:text-2xl text-primary font-bold mb-6">
+                            Curious & Passion-Driven Engineer
+                        </p>
+                        
+                        <div class="flex space-x-6 mb-8">
+                            <a href="https://github.com/suvedhab" target="_blank" class="text-gray-600 hover:text-gray-900 transition-colors duration-200" title="GitHub Profile">
+                                <svg class="w-8 h-8 fill-current" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.492.997.107-.775.418-1.305.762-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.29-1.552 3.295-1.23 3.295-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                            </a>
+                            <a href="https://www.linkedin.com/in/suvedha-b-709ba228b?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" class="text-gray-600 hover:text-blue-700 transition-colors duration-200" title="LinkedIn Profile">
+                                <svg class="w-8 h-8 fill-current" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>LinkedIn</title><path d="M20.447 20.452h-3.554v-5.569c0-1.325-.028-3.044-1.852-3.044-1.853 0-2.136 1.445-2.136 2.951v5.662H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.227 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.456c.98 0 1.773-.773 1.773-1.729V1.729C24 .774 23.207 0 22.227 0z"/></svg>
+                            </a>
+                        </div>
+
+                        <p class="text-lg lg:text-xl text-gray-700 leading-relaxed max-w-3xl mb-8">
+                            I am a 3rd Year B.E. ECE student deeply interested in Machine Learning, Image processing, and Embedded Systems. 
+                            I thrive in collaborative environments and am proactively seeking roles that allow me to apply my skills to build meaningful, impactful projects. 
+                            Explore my sections below to see my work!
+                        </p>
+                        <div class="grid md:grid-cols-3 gap-6 w-full max-w-4xl mt-8 pt-8 border-t border-gray-200">
+                            <div class="bg-indigo-50 p-4 rounded-lg shadow-inner flex flex-col items-center justify-center">
+                                <h4 class="font-bold text-lg text-primary mb-1">Top Skills</h4>
+                                <p class="text-sm text-gray-700 text-center">Python, C, Embedded Systems, ML & Image processing</p>
+                            </div>
+                            <div class="bg-indigo-50 p-4 rounded-lg shadow-inner flex flex-col items-center justify-center">
+                                <h4 class="font-bold text-lg text-primary mb-1">Key Internship</h4>
+                                <p class="text-sm text-gray-700 text-center">AAI, Wireless communications, ML & Image processing</p>
+                            </div>
+                            <div class="bg-indigo-50 p-4 rounded-lg shadow-inner flex flex-col items-center justify-center">
+                                <h4 class="font-bold text-lg text-primary mb-1">Achievements</h4>
+                                <p class="text-sm text-gray-700 text-center">Published paper & patent application filed.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            education: {
+                title: "Education & Academic Profile",
+                type: "detail",
+                content: `
+                    <div class="space-y-6">
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <h3 class="text-2xl font-bold text-gray-800">B.E. Electronics & Communication Engineering</h3>
+                            <p class="text-primary font-medium">Velammal College of Engineering & Technology (2023–2027)</p>
+                            <p class="mt-2 text-gray-600">Current CGPA: 8.85 (up to 4th semester)</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <h3 class="text-2xl font-bold text-gray-800">12th Grade / Higher Secondary</h3>
+                            <p class="text-primary font-medium">Vikaasa school (2023)</p>
+                            <p class="mt-2 text-gray-600">Percentage: 81.5% </p>
+                        </div>
+                    </div>
+                `
+            },
+            skills: {
+                title: "Technical Skills",
+                type: "detail",
+                content: `
+                    <div class="bg-white p-8 rounded-xl shadow-lg">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Programming & Core</h3>
+                        <div class="flex flex-wrap gap-3 mb-6">
+                            <span class="skill-pill">Python</span>
+                            <span class="skill-pill">C / C++</span>
+                            <span class="skill-pill">Embedded C</span>
+                            <span class="skill-pill">HTML / CSS / JS</span>
+                            <span class="skill-pill">Git & GitHub</span>
+                        </div>
+                        
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Machine Learning</h3>
+                        <div class="flex flex-wrap gap-3 mb-6">
+                            <span class="skill-pill">OpenCV</span>
+                            <span class="skill-pill">TensorFlow / Keras</span>
+                            <span class="skill-pill">Pytorch Basics</span>
+                            <span class="skill-pill">Data Preprocessing</span>
+                            <span class="skill-pill">CNNs / RNNs</span>
+                        </div>
+
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Hardware & Tools</h3>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="skill-pill">ESP32 / Arduino</span>
+                            <span class="skill-pill">Raspberry Pi</span>
+                            <span class="skill-pill">Proteus & LTSpice</span>
+                            <span class="skill-pill">MATLAB</span>
+                        </div>
+                    </div>
+                    <style>.skill-pill { @apply bg-indigo-100 text-primary px-4 py-1 rounded-full text-sm font-medium shadow-sm; }</style>
+                `
+            },
+            // --- Multi-Level Section: INTERNSHIPS ---
+            internships: {
+                title: "Internships & Industry Exposure",
+                type: "list",
+                items: [
+                    { 
+                        id: "aai", 
+                        name: "AAI — Madurai Airport", 
+                        summary: "Studied CNS and Air Traffic Management Systems.",
+                        content: {
+                            title: "Airport Authority of India (AAI) Internship",
+                            details: "I completed a two-week internship focusing on Communication, Navigation, and Surveillance (CNS) and Air Traffic Management (ATM) systems. Learned about communication techniques, navigation instruments, and landing procedures, including ILS, DME, and more! .",
+                            images: [
+                                { src: "assets/images/internship1.jpeg", caption: "Certificate from AAI Internship." },
+                                { src: "assets/images/aai.jpeg", caption: "Learning about the ILS and DVOR systems." },
+                            ]
+                        }
+                    },
+                    { 
+                        id: "tce_training", 
+                        name: "Intern on wireless communication", 
+                        summary: "VLSI domain project",
+                        content: {
+                            title: "Wireless communication Training",
+                            details: "Explored various ECE domains before specializing in VLSI, where I designed and simulated a low noise amplifier using ADS software.",
+                            images: [
+                                { src: "assets/images/internship2.jpeg", caption: "Training Program Completion Certificate." },
+                                { src: "assets/images/tce1.jpeg", caption: "A glimpse into my internship training" },
+                                { src: "assets/images/tce2.jpeg", caption: "LNA Project output" },
+                            ]
+                        }
+                    },
+                    { 
+                        id: "ai_training", 
+                        name: "ML & Image Processing Internship", 
+                        summary: "Training in various ML algorithms and Image processing techniques in various platforms",
+                        content: {
+                            title: "ML and Image Processing Internship",
+                            details: "This internship helped in understanding the basics of ML and developing projects using it in realtime",
+                            images: [
+                                { src: "assets/images/ml.jpeg", caption: "Certificate of Completion for ML & Image processing Internship." },
+                            ]
+                        }
+                    },
+                ]
+            },
+            // --- MODIFIED Multi-Level Section: PROJECTS ---
+            projects: {
+                title: "Key Projects",
+                type: "list",
+                items: [
+                    {
+                        id: "waste_classifier",
+                        name: "Plastic vs Organic Waste Classifier",
+                        summary: "CNN model for binary waste classification using a custom dataset.",
+                        content: {
+                            title: "Plastic vs Organic Waste Classifier: System Details",
+                            details: `
+                                <p class="text-gray-700 mb-4">This project demonstrates expertise in Computer Vision and Deep Learning by implementing a **Convolutional Neural Network (CNN)** for classifying waste. The goal was to build a system robust enough to differentiate between plastic and organic waste, which is crucial for automated sorting systems.</p>
+                                
+                                <h4 class="text-xl font-bold text-primary mt-6 mb-2">How It Works:</h4>
+                                <ul class="list-disc list-inside text-gray-700 space-y-2 ml-4">
+                                    <li>**Data Pipeline:** A custom dataset of over 2,000 images was collected, augmented (rotation, zoom, brightness), and rigorously pre-processed to simulate real-world variability.</li>
+                                    <li>**Model Architecture:** A lightweight, custom-designed 10-layer CNN was trained from scratch. The final classification uses a sigmoid activation function for binary output.</li>
+                                    <li>**Performance:** The model achieved an **88% validation accuracy** and was optimized for deployment on low-power devices.</li>
+                                </ul>
+                                <p class="mt-4 text-gray-700 font-medium">This approach ensures not only accuracy but also computational efficiency.</p>
+                                <a href="#" target="_blank" class="text-sm text-indigo-500 hover:text-indigo-700 mt-2 block">View Project Code (GitHub link) &rarr;</a>
+                            `,
+                            images: [
+                                { src: "https://placehold.co/800x600/6366f1/ffffff?text=Model+Accuracy+Graph", caption: "Training and Validation Accuracy Plot" },
+                                { src: "https://placehold.co/800x600/4f46e5/fff?text=Waste+Classifier+Example+Output", caption: "Example of Classified Organic Waste" },
+                            ]
+                        }
+                    },
+                    {
+                        id: "emotion_detection",
+                        name: "ESP32-CAM Emotion Detection",
+                        summary: "Real-time facial emotion recognition using embedded hardware and Python ML.",
+                        content: {
+                            title: "ESP32-CAM Emotion Detection: Embedded System Design",
+                            details: `
+                                <p class="text-gray-700 mb-4">This project integrates **Embedded Systems** (ESP32-CAM) with **Machine Learning** to create a cost-effective, real-time emotion detection system. It highlights proficiency in hardware interfacing and efficient model deployment.</p>
+                                
+                                <h4 class="text-xl font-bold text-primary mt-6 mb-2">How It Works:</h4>
+                                <ul class="list-disc list-inside text-gray-700 space-y-2 ml-4">
+                                    <li>**Hardware Setup:** The ESP32-CAM captures video frames and transmits them over Wi-Fi to a host machine.</li>
+                                    <li>**Backend Processing:** A Python **Flask** backend receives the frames, uses OpenCV for face detection, and feeds the cropped image into a lightweight ML model (e.g., MobileNet variant or a small custom CNN) for emotion classification (Happy, Sad, Neutral).</li>
+                                    <li>**Output:** The result is displayed on a simple web dashboard provided by the Flask application, enabling real-time monitoring.</li>
+                                </ul>
+                                <p class="mt-4 text-gray-700 font-medium">This project showcases a complete end-to-end solution from hardware capture to web visualization.</p>
+                                <a href="#" target="_blank" class="text-sm text-indigo-500 hover:text-indigo-700 mt-2 block">View Project Demo &rarr;</a>
+                            `,
+                            images: [
+                                { src: "https://placehold.co/800x600/4f46e5/ffffff?text=ESP32+CAM+Hardware+Setup", caption: "ESP32-CAM Prototype Image" },
+                                { src: "https://placehold.co/800x600/facc15/000?text=System+Flow+Diagram", caption: "System Data Flow Diagram" }
+                            ]
+                        }
+                    }
+                ]
+            },
+            research: {
+                title: "Research & Intellectual Property",
+                type: "detail",
+                content: `
+                    <div class="space-y-6">
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <h3 class="text-2xl font-bold text-primary">Published Research Paper</h3>
+                            <p class="text-gray-700 mb-2">Title: [Insert Title of Paper Here]</p>
+                            <p class="text-gray-600 italic">Journal/Conference: [Insert Details]</p>
+                            <p class="mt-3 text-gray-700">A short summary of the paper's focus, e.g., "The research explored novel methodologies for energy-efficient image segmentation using lightweight neural networks."</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <h3 class="text-2xl font-bold text-primary">Patent Application Filed</h3>
+                            <p class="text-gray-700 mb-2">Patent Number/Title: [Insert Details]</p>
+                            <p class="text-gray-600 italic">Status: Filed</p>
+                            <p class="mt-3 text-gray-700">Abstract of the patent: "A system designed for early fault detection in industrial machinery using integrated acoustic and thermal signatures, minimizing downtime."</p>
+                        </div>
+                    </div>
+                `
+            },
+            // --- MODIFIED Multi-Level Section: CERTIFICATIONS ---
+            certifications: {
+                title: "Certifications & Online Courses",
+                type: "list",
+                items: [
+                    { 
+                        id: "nptel", 
+                        name: "NPTEL Courses", 
+                        summary: "Elite certifications in Machine Learning and Digital Signal Processing.",
+                        content: {
+                            title: "NPTEL Courses",
+                            type: "sub_list", // Custom type for nested list view
+                            items: [
+                                { 
+                                    id: "nptel_ml", 
+                                    name: "Electronic Systems for Cancer diagnosis", 
+                                    content: {
+                                        title: "NPTEL: Electronic Systems for Cancer diagnosis",
+                                        images: [ { src: "assets/images/cancer.jpeg", caption: "NPTEL Certificate Image" } ]
+                                    }
+                                },
+                                { 
+                                    id: "nptel_digital", 
+                                    name: "Simulation of communication Systems using Matlab", 
+                                    content: {
+                                        title: "NPTEL:Simulation of communication Systems using Matlab",
+                                        images: [ { src: "assets/images/matlab.jpeg", caption: "NPTEL Certificate Image" } ]
+                                    }
+                                },
+                                { 
+                                    id: "nptel_python", 
+                                    name: "The Joy of Computing using Python", 
+                                    content: {
+                                        title: "NPTEL: The Joy of Computing using Python(Elite + silver)",
+                                        images: [ { src: "assets/images/python.jpeg", caption: "NPTEL Certificate Image" } ]
+                                    }
+                                },{ 
+                                    id: "nptel_sensor", 
+                                    name: "Sensor technologies:physics, fabrication and circuits", 
+                                    content: {
+                                        title: "NPTEL: Sensor technologies:physics, fabrication and circuits",
+                                        images: [ { src: "assets/images/sensor.jpeg", caption: "NPTEL Certificate Image" } ]
+                                    }
+                                },{ 
+                                    id: "nptel_c", 
+                                    name: "Problem solving through Programming in C", 
+                                    content: {
+                                        title: "NPTEL:Problem solving through Programming in C",
+                                        images: [ { src: "assets/images/c.jpeg", caption: "NPTEL Certificate Image" } ]
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    { 
+                        id: "coursera", 
+                        name: "Coursera Certifications", 
+                        summary: "Specializations in Computer Vision and related fields.",
+                        content: {
+                            title: "Coursera Certifications",
+                            type: "sub_list", // Custom type for nested list view
+                            items: [
+                                { 
+                                    id: "coursera_cv", 
+                                    name: "Computer Vision Basics Specialization", 
+                                    content: {
+                                        title: "Coursera: Computer Vision Basics",
+                                        images: [ { src: "https://placehold.co/400x300/f59e0b/ffffff?text=Coursera+CV+Cert", caption: "Coursera CV Certificate Image" } ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            competitions: {
+                title: "Competitions & Hackathons",
+                type: "detail",
+                content: `
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <ul class="list-disc list-inside text-gray-700 space-y-3">
+                            <li><strong>Smart India Hackathon (SIH) 2024:</strong> Team lead for a project focusing on urban water management using satellite imagery. (Phase X completed)</li>
+                            <li><strong>College Technical Fest, Project Competition:</strong> Won 1st place for the "Emotion Detection" system.</li>
+                            <li><strong>Python Programming Contest:</strong> Secured a top 10 rank in a college-wide coding challenge.</li>
+                        </ul>
+                        <p class="mt-4 text-sm text-gray-500">I actively seek out competitive challenges to rapidly develop my skills and collaborate effectively under pressure.</p>
+                    </div>
+                `
+            },
+            // --- NEW LIST SECTION: ACHIEVEMENTS ---
+            achievements: {
+                title: "Achievements & Awards",
+                type: "list",
+                items: [
+                    { 
+                        id: "third_place", 
+                        name: " Paper presentation (2024)", 
+                        summary: "Won the 3rd place for the paper 'Digital twin technology'",
+                        content: {
+                            title: "NEC Tech Fest(2024)",
+                            details: "A paper regarding digital twin technology and their various advancements in different domains was presented in National engineering college",
+                            images: [ 
+                                { src: "assets/images/nec.jpeg", caption: "3rd Place Competition Certificate" },
+                                { src: "assets/images/nec2.jpeg", caption: "Photo from the award ceremony" } 
+                            ]
+                        }
+                    },
+                    { 
+                        id: "poster", 
+                        name: "Poster presentation(2024)", 
+                        summary: "Secured 1st place in poster presentation in my college",
+                        content: {
+                            title: "Poster presentation",
+                            details: "Secured the 1st place in the poster presentation competition. The topic what I presented was about 'LOW COST HOUSING'.",
+                            images: [ { src: "assets/images/poster.jpeg", caption: "1st place Certificate" },
+                             { src: "assets/images/poster2.jpeg", caption: "During my presentation" },
+                             { src: "assets/images/poster1.jpeg", caption: "My work" },
+
+                            ]
+                        }
+                    },
+                    { 
+                        id: "collage", 
+                        name: "Collage contest(2024)", 
+                        summary: "Secured 2nd place in collage contest in my college",
+                        content: {
+                            title: "Poster presentation",
+                            details: "Secured the 2nd place in the collage competition. It was on the spot collage preparation on the topic 'Chandrayan 3'.",
+                            images: [ { src: "assets/images/collage.jpeg", caption: "2nd place Certificate" },
+                             { src: "assets/images/collage2.jpeg", caption: "photo from award ceremony" },
+
+                            ]
+                        }
+                    },
+                    { 
+                        id: "quiz", 
+                        name: "Quiz contest(2024)", 
+                        summary: "Secured 3rd place in quiz contest held in my college",
+                        content: {
+                            title: "Quiz competition",
+                            details: "Secured the 3rd place in the quiz competition.",
+                            images: [ { src: "assets/images/quiz.jpeg", caption: "3rd place Certificate" },
+                             { src: "assets/images/quiz2.jpeg", caption: "photo from award ceremony" },
+                            ]
+                        }
+                    },
+                ]
+            },
+            // --- NEW LIST SECTION: PARTICIPATIONS ---
+            participations: {
+                title: "Event Participations",
+                type: "list",
+                items: [
+                    {
+                        id: "RIT",
+                        name: "FUTUREPRENEUR",
+                        summary: "Presented an idea 'Emergency Connect.",
+                        content: {
+                            title: "FUTUREPRENEUR-Idea presentation",
+                            details: "Our team presented an Innovative idea 'Emergency Connect'that was about an idea to provide communication for the village side areas using LoRaWAN, at TN Chamber, Madurai.",
+                            images: [
+                                 { src: "assets/images/rit1.jpeg", caption: "Participation Certificate" },
+                                  { src: "assets/images/rit2.jpeg", caption: "During presentation" }
+                             ]
+                        }
+                    },
+                    {
+                         id: "ELOCUTION",
+                        name: "ELOCUTION CONTEST",
+                        summary: "Participated in the elocution contest",
+                        content: {
+                            title: "Elocution contest",
+                            details: "Participated in an elocution competition on the topic'Vikshit Bharat' at my college ",
+                            images: [
+                                 { src: "assets/images/elocution2.jpeg", caption: "Participation Certificate" },
+                                  { src: "assets/images/elocution.jpeg", caption: "During presentation" }
+                             ]
+                        }
+                    }
+                ]
+            },
+            // --- NEW LIST SECTION: HOBBIES ---
+            hobbies: {
+                title: "Hobbies & Interests",
+                type: "list",
+                items: [
+                    {
+                        id: "gardening",
+                        name: "GARDENING",
+                        summary: "creating my own garden at my place",
+                        content: {
+                            title: "GARDENING",
+                            details: "This is one my favourite thing to do at early mornings and my all time favourite too which started from lockdown. A routine that thought me patience and consistency.",
+                            images: [ { src: "assets/images/PAINT.jpeg", caption: "Photo of my paintings" } ]
+                        }
+                    },
+                    {
+                        id: "painting",
+                        name: "PAINTING",
+                        summary: "A focused hobby for relaxation and divertion of thoughts always.",
+                        content: {
+                            title: "PAINTING",
+                            details: "This has been very important tool to take off my time. Always a magic to restart my mind and creativity.",
+                            images: [ { src: "assets/images/PAINT.jpeg", caption: "Photo of my paintings" } ]
+                        }
+                    },
+                     {
+                        id: "cooking",
+                        name: "COOKING",
+                        summary: "Making my favourite dishes in my mean time",
+                        content: {
+                            title: "COOKING",
+                            details: "Cooking in my past few years, it had played a greater role to beat my boring time. Tried out some of my favourite chat items and  dishes in the last few months.This has proved me love can be eaten.",
+                        }
+                    },
+                    
+                ]
+            },
+        };
+
+        // --- Core Application State & Functions (No change to logic) ---
+        const contentContainer = document.getElementById('content-container');
+        const breadcrumb = document.getElementById('breadcrumb');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const menuToggle = document.getElementById('menu-toggle');
+        const navBar = document.getElementById('nav-links');
+
+        // Lightbox elements
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightbox-image');
+        const lightboxCaption = document.getElementById('lightbox-caption');
+        const lightboxImageContainer = document.getElementById('lightbox-image-container');
+
+        // History Stack stores objects: { pageId: 'certifications', itemId: 'nptel', subItemId: 'nptel_ml' }
+        let historyStack = [{ pageId: 'home', itemId: null, subItemId: null }]; // Tracks navigation history for the 'Back' button
+
+        // Pan/Zoom State
+        let currentScale = 1;
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+        let translateX = 0;
+        let translateY = 0;
+
+        // 1. Mobile Menu Toggle
+        menuToggle.addEventListener('click', () => {
+            navBar.classList.toggle('open');
+        });
+
+        // 2. Navigation Logic (Handles Clicks on Sidebar Links)
+        navLinks.forEach(link => {
+            link.addEventListener('click', (event) => {
+                const targetId = event.currentTarget.dataset.target;
+                
+                // If clicking the current Level 1 item, do nothing
+                if (historyStack.length === 1 && historyStack[0].pageId === targetId) {
+                    return;
+                }
+                
+                // Reset history to the new Level 1 page
+                historyStack = [{ pageId: targetId, itemId: null, subItemId: null }];
+                renderContent(targetId);
+                
+                // Close mobile menu after selection
+                navBar.classList.remove('open');
+            });
+        });
+
+        // 3. Dynamic Rendering of Content
+        function renderContent(pageId, itemId = null, subItemId = null) {
+            const data = PORTFOLIO_DATA[pageId];
+
+            if (!data) {
+                contentContainer.innerHTML = '<div class="text-center text-gray-500 py-10">Content not found.</div>';
+                updateBreadcrumb();
+                return;
+            }
+
+            // Update active link in the sidebar
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.target === pageId) {
+                    link.classList.add('active');
+                }
+            });
+
+            let html = `<h2 class="text-4xl lg:text-5xl font-extrabold text-gray-900 mb-8">${data.title}</h2>`;
+
+            // LEVEL 4: Sub-Detail View (e.g., viewing a specific NPTEL certificate image)
+            if (subItemId && itemId && data.type === 'list') {
+                const category = data.items.find(i => i.id === itemId);
+                const item = category?.content?.items?.find(i => i.id === subItemId);
+                
+                if (item && item.content) {
+                    // Custom rendering for certificate images only (as requested by user)
+                    html = `
+                        <h2 class="text-4xl font-extrabold text-gray-900 mb-8">${item.content.title}</h2>
+                        <div class="bg-white p-8 rounded-xl shadow-lg space-y-6">
+                            ${item.content.images && item.content.images.length > 0 ? 
+                                `<div class="mt-4">
+                                    <h4 class="text-xl font-semibold text-primary mb-4">Certificate Proof (Click to Zoom)</h4>
+                                    <div class="grid grid-cols-1 gap-4">
+                                        ${item.content.images.map(img => `
+                                            <div class="rounded-lg overflow-hidden shadow-md bg-gray-50 cursor-pointer hover:opacity-80 transition thumbnail-container aspect-video" 
+                                                 data-src="${img.src}" data-caption="${img.caption}" onclick="openLightbox(this)">
+                                                <img src="${img.src}" alt="${img.caption}" class="thumbnail-image object-contain">
+                                                <p class="p-2 text-center text-xs text-gray-600">${img.caption}</p>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>`
+                                : '<p class="text-gray-500">No image available.</p>'}
+                        </div>
+                    `;
+                }
+            }
+            // LEVEL 3: Detail View (e.g., viewing AAI Internship details) OR a Sub-List (e.g., NPTEL list)
+            else if (itemId && data.type === 'list') {
+                const item = data.items.find(i => i.id === itemId);
+
+                // Handle the sub-list structure (for Certifications)
+                if (item?.content?.type === 'sub_list') {
+                    // This is the Level 2 list for NPTEL/Coursera
+                    html = `<h2 class="text-4xl font-extrabold text-gray-900 mb-8">${item.content.title}</h2>`;
+                    html += `
+                        <div class="space-y-4">
+                            ${item.content.items.map(subItem => `
+                                <div data-page-id="${pageId}" data-item-id="${itemId}" data-sub-id="${subItem.id}" class="sub-list-item list-item bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 cursor-pointer border-l-4 border-primary/0 hover:border-primary/50">
+                                    <h3 class="text-xl font-bold text-gray-800">${subItem.name}</h3>
+                                    <span class="text-sm text-primary font-medium mt-2 inline-block">View Certificate &rarr;</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                // Handle standard Level 3 detail view (for Internships, Projects, Achievements, Participations, Hobbies)
+                else if (item && item.content) {
+                   html = `
+                        <h2 class="text-4xl font-extrabold text-gray-900 mb-8">${item.content.title}</h2>
+                        <div class="bg-white p-8 rounded-xl shadow-lg space-y-6">
+                            <p class="text-gray-700 leading-relaxed">${item.content.details}</p>
+                            ${item.content.images && item.content.images.length > 0 ? 
+                                `<div class="mt-8 border-t pt-6">
+                                    <h4 class="text-xl font-semibold text-primary mb-3">Supporting Visuals</h4>
+                                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                        ${item.content.images.map(img => `
+                                            <div class="rounded-lg overflow-hidden shadow-md bg-gray-50 cursor-pointer hover:opacity-80 transition thumbnail-container" 
+                                                 data-src="${img.src}" data-caption="${img.caption}" onclick="openLightbox(this)">
+                                                <img src="${img.src}" alt="${img.caption}" class="thumbnail-image">
+                                                <p class="p-2 text-center text-xs text-gray-600 truncate">${img.caption}</p>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>`
+                                : ''}
+                        </div>
+                    `;
+                }
+            } 
+            // LEVEL 2: List View (e.g., seeing list of Internships, Achievements, Hobbies)
+            else if (data.type === 'list') {
+                html += `
+                    <div class="space-y-4">
+                        ${data.items.map(item => `
+                            <div data-id="${item.id}" class="list-item bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 cursor-pointer border-l-4 border-primary/0 hover:border-primary/50">
+                                <h3 class="text-xl font-bold text-gray-800">${item.name}</h3>
+                                <p class="text-gray-600 mt-1">${item.summary}</p>
+                                <span class="text-sm text-primary font-medium mt-2 inline-block">View Details &rarr;</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } 
+            // LEVEL 1: Simple Detail View (e.g., Home, Skills, Education)
+            else if (data.type === 'detail') {
+                html += data.content;
+            }
+
+            contentContainer.innerHTML = html;
+            updateBreadcrumb(pageId, itemId, subItemId);
+
+            // Add click listeners for Level 2 items (Top-level lists like Internships/Achievements)
+            if (data.type === 'list' && !itemId && !subItemId) {
+                document.querySelectorAll('.list-item').forEach(item => {
+                    item.addEventListener('click', (event) => {
+                        const newItemId = event.currentTarget.dataset.id;
+                        historyStack.push({ pageId, itemId: newItemId, subItemId: null }); 
+                        renderContent(pageId, newItemId);
+                    });
+                });
+            }
+            
+            // Add click listeners for Level 3 items (Sub-lists like NPTEL/Coursera)
+            if (itemId && data.type === 'list') {
+                const item = data.items.find(i => i.id === itemId);
+                if (item?.content?.type === 'sub_list') {
+                     document.querySelectorAll('.sub-list-item').forEach(subItem => {
+                        subItem.addEventListener('click', (event) => {
+                            const newSubId = event.currentTarget.dataset.subId;
+                            historyStack.push({ pageId, itemId, subItemId: newSubId }); 
+                            renderContent(pageId, itemId, newSubId);
+                        });
+                    });
+                }
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 4. Back Button / History Management
+        function goBack() {
+            if (historyStack.length > 1) {
+                historyStack.pop(); // Remove current state
+                const prevState = historyStack[historyStack.length - 1];
+                
+                // Render based on the previous state object
+                renderContent(prevState.pageId, prevState.itemId, prevState.subItemId);
+            } else {
+                // If only the base state is left, ensure we are on home
+                renderContent('home');
+            }
+        }
+
+        // 5. Breadcrumb Update (UI for Back/Hierarchy)
+        function updateBreadcrumb(pageId, itemId = null, subItemId = null) {
+            const currentSection = document.getElementById('current-category');
+            
+            // Show breadcrumb if we are deeper than Level 1
+            if (historyStack.length > 1 || itemId) {
+                breadcrumb.classList.remove('hidden');
+            } else {
+                breadcrumb.classList.add('hidden');
+            }
+
+            let pathText = '';
+            if (historyStack.length > 1) {
+                const currentState = historyStack[historyStack.length - 1];
+                const level1Id = currentState.pageId;
+                const level1Title = PORTFOLIO_DATA[level1Id]?.title || 'Menu';
+                
+                pathText = level1Title;
+                
+                // If on Level 3 or 4, add the item name
+                if (currentState.itemId) {
+                    const item = PORTFOLIO_DATA[level1Id].items.find(i => i.id === currentState.itemId);
+                    if (item) {
+                        pathText += ` / ${item.name}`;
+                    }
+                }
+                
+                // If on Level 4, add the sub-item name
+                if (currentState.subItemId) {
+                    const category = PORTFOLIO_DATA[level1Id].items.find(i => i.id === currentState.itemId);
+                    const subItem = category?.content?.items?.find(i => i.id === currentState.subItemId);
+                    if (subItem) {
+                        pathText += ` / ${subItem.name}`;
+                    }
+                }
+                currentSection.innerHTML = pathText;
+            } else {
+                currentSection.innerHTML = '';
+            }
+        }
+
+        // --- Lightbox / Image Gallery Functions ---
+
+        function updateImageTransform() {
+            lightboxImage.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
+            if (currentScale > 1) {
+                lightboxImage.classList.add('zoomed');
+            } else {
+                lightboxImage.classList.remove('zoomed');
+                // Center image if zoom resets
+                translateX = 0;
+                translateY = 0;
+            }
+        }
+
+        function openLightbox(thumbnailElement) {
+            const src = thumbnailElement.dataset.src;
+            const caption = thumbnailElement.dataset.caption;
+
+            lightboxImage.src = src;
+            lightboxCaption.textContent = caption;
+            
+            // Reset state
+            currentScale = 1;
+            translateX = 0;
+            translateY = 0;
+            updateImageTransform();
+            
+            lightbox.classList.remove('hidden');
+            lightbox.classList.add('flex');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling background
+        }
+
+        function closeLightbox(event) {
+            // Only close if clicking the background or the close button
+            if (event.target === lightbox || event.target.closest('button')) {
+                lightbox.classList.add('hidden');
+                lightbox.classList.remove('flex');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Image Zoom (Scroll Wheel)
+        lightboxImageContainer.addEventListener('wheel', (event) => {
+            event.preventDefault();
+
+            // Only zoom if lightbox is open
+            if (lightbox.classList.contains('hidden')) return; 
+
+            const zoomFactor = 0.1;
+            const direction = event.deltaY < 0 ? 1 : -1; // Scroll up = zoom in
+
+            let newScale = currentScale + direction * zoomFactor;
+
+            // Clamp scale between 1 (default) and 4 (max zoom)
+            newScale = Math.min(Math.max(1, newScale), 4);
+
+            // Get mouse position relative to image
+            const rect = lightboxImage.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+
+            // Calculate new translation to zoom in/out relative to the mouse pointer
+            translateX -= (mouseX - rect.width / 2) * (newScale - currentScale) / newScale;
+            translateY -= (mouseY - rect.height / 2) * (newScale - currentScale) / newScale;
+
+            currentScale = newScale;
+            updateImageTransform();
+        });
+
+        // Image Pan (Click and Drag)
+        lightboxImage.addEventListener('mousedown', (event) => {
+            if (currentScale > 1) {
+                isDragging = true;
+                startX = event.clientX - translateX;
+                startY = event.clientY - translateY;
+                lightboxImage.style.cursor = 'moving';
+            }
+        });
+
+        document.addEventListener('mousemove', (event) => {
+            if (!isDragging) return;
+            event.preventDefault();
+            translateX = event.clientX - startX;
+            translateY = event.clientY - startY;
+            updateImageTransform();
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                if (currentScale > 1) {
+                    lightboxImage.style.cursor = 'move';
+                } else {
+                    lightboxImage.style.cursor = 'grab';
+                }
+            }
+        });
+
+        // Initialize the app by loading the 'home' section
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load content using the object-based history state
+            renderContent(historyStack[0].pageId);
+        });
+    </script>
+</body>
+</html>
