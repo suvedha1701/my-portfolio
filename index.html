@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suvedha B — Professional Dark Portfolio</title>
+    <title>Suvedha B — Professional Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJ8uR26Va/5JtNCrB86d8cM5/8L6iJgY7B5k31lJq7y85nB2R2h9FfG5l5g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script>
         tailwind.config = {
             theme: {
@@ -119,6 +121,23 @@
             width: 0%;
             z-index: 99;
             transition: width 0.1s;
+        }
+
+        /* New Style for Project Button */
+        .project-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem; /* py-3 px-6 */
+            font-weight: 600;
+            border-radius: 0.5rem; /* rounded-lg */
+            background-color: #38bdf8; /* primary */
+            color: #111827; /* deep dark text */
+            transition: background-color 0.2s, transform 0.2s;
+            margin-top: 1.5rem;
+        }
+        .project-button:hover {
+            background-color: #0ea5e9; /* Sky-500 */
+            transform: translateY(-1px);
         }
     </style>
 </head>
@@ -259,32 +278,49 @@
                 title: "Technical Skills",
                 type: "detail",
                 content: `
-                    <div class="bg-card-bg p-8 rounded-2xl shadow-xl transition-shadow duration-300 hover:shadow-primary/50 hover:shadow-2xl">
-                        <h3 class="text-2xl font-bold text-primary mb-4 border-b border-gray-700 pb-2">Programming & Core</h3>
-                        <div class="flex flex-wrap gap-3 mb-6">
-                            <span class="skill-pill">Python</span>
-                            <span class="skill-pill">C</span>
-                            <span class="skill-pill">Embedded C</span>
-                            <span class="skill-pill">HTML / CSS / JS</span>
-                            <span class="skill-pill">Git & GitHub</span>
-                        </div>
+                    <div class="bg-card-bg text-white p-8 lg:p-12 rounded-2xl shadow-xl transition-shadow duration-300 hover:shadow-primary/50 hover:shadow-2xl">
+                        <h3 class="text-4xl font-extrabold text-white mb-10 text-center">SKILLS</h3>
                         
-                        <h3 class="text-2xl font-bold text-primary mb-4 border-b border-gray-700 pb-2">Machine Learning</h3>
-                        <div class="flex flex-wrap gap-3 mb-6">
-                            <span class="skill-pill">OpenCV</span>
-                            <span class="skill-pill">TensorFlow / Keras</span>
-                            <span class="skill-pill"> Digital Image processing</span>
+                        <div class="flex flex-wrap justify-center gap-8 md:gap-12 mb-12 border-b border-gray-700 pb-10">
+                            <div class="text-center flex flex-col items-center">
+                                <i class="fa-brands fa-python text-6xl text-secondary mb-2"></i>
+                                <p class="text-lg font-semibold text-gray-200">Python</p>
+                            </div>
+                            <div class="text-center flex flex-col items-center">
+                                <i class="fa-solid fa-c text-6xl text-primary mb-2"></i>
+                                <p class="text-lg font-semibold text-gray-200">C / Embedded C</p>
+                            </div>
+                            <div class="text-center flex flex-col items-center">
+                                <i class="fa-brands fa-js text-6xl text-amber-300 mb-2"></i> 
+                                <p class="text-lg font-semibold text-gray-200">HTML/CSS/JS</p>
+                            </div>
+                            
+                            <div class="text-center flex flex-col items-center">
+                                <i class="fa-solid fa-brain text-6xl text-rose-400 mb-2"></i> 
+                                <p class="text-lg font-semibold text-gray-200">ML / Image Proc.</p>
+                            </div>
+                            <div class="text-center flex flex-col items-center">
+                                <i class="fa-solid fa-atom text-6xl text-sky-400 mb-2"></i> 
+                                <p class="text-lg font-semibold text-gray-200">TensorFlow/Keras</p>
+                            </div>
                         </div>
 
-                        <h3 class="text-2xl font-bold text-primary mb-4 border-b border-gray-700 pb-2">Tools</h3>
-                        <div class="flex flex-wrap gap-3">
-                            <span class="skill-pill">ESP32/Arduino</span>
-                            <span class="skill-pill">Google colab/Jupyter Notebook</span>
-                            <span class="skill-pill">VS Code</span>
-                            <span class="skill-pill">LTSpice</span>
-                            <span class="skill-pill">MATLAB</span>
+                        <div class="space-y-6">
+                            <h4 class="text-2xl font-bold text-primary border-b border-gray-700 pb-2 mb-4">Tools & Platforms</h4>
+                            <div class="flex flex-wrap gap-4 text-gray-300">
+                                <span class="tool-pill"><i class="fa-solid fa-microchip mr-2"></i>ESP32/Arduino</span>
+                                <span class="tool-pill"><i class="fa-brands fa-github mr-2"></i>Git & GitHub</span>
+                                <span class="tool-pill"><i class="fa-solid fa-laptop-code mr-2"></i>VS Code / Jupyter</span>
+                                <span class="tool-pill"><i class="fa-solid fa-chart-line mr-2"></i>MATLAB / LTSpice</span>
+                            </div>
                         </div>
                     </div>
+                    <style>
+                        /* Ensuring the tool pills blend with the dark background */
+                        .tool-pill { 
+                            @apply bg-gray-700 text-gray-200 px-4 py-1 rounded-full text-sm font-medium shadow-md; 
+                        }
+                    </style>
                 `
             },
             // --- Multi-Level Section: INTERNSHIPS ---
@@ -338,6 +374,62 @@
                 title: "Key Projects",
                 type: "list",
                 items: [
+                    // New Project 1: CGPA Calculator
+                    {
+                        id: "cgpa_calculator",
+                        name: "GPA & CGPA Calculator Web App",
+                        summary: "A practical, responsive web application for ECE students of my college to easily calculate their semester GPA and overall CGPA.",
+                        content: {
+                            title: "GPA & CGPA Calculator: Frontend Web Project",
+                            details: `
+                                <p class="text-gray-300 mb-4">A utility web application designed to help students track and calculate their academic performance efficiently. It allows input of credit hours and grades for multiple courses to compute the Semester Grade Point Average (GPA) and the cumulative CGPA.</p>
+                                
+                                <h4 class="text-xl font-bold text-primary mt-6 mb-2">Technology Stack:</h4>
+                                <ul class="list-disc list-inside text-gray-300 space-y-2 ml-4">
+                                    <li>Frontend: Built using HTML, CSS, and JavaScript.</li>
+                                    <li>Design:Focused on responsive design for use on both desktop and mobile devices.</li>
+                                    <li>Functionality: Implements the core logic for grade-to-point conversion and weighted average calculation for GPA and CGPA.</li>
+                                </ul>
+                                <p class="mt-4 text-gray-300 font-medium">This project demonstrates a foundational understanding of web development and practical application of JavaScript logic.</p>
+                                
+                                <a href="https://suvedha1701.github.io/ece-gpacalcu/" target="_blank" class="project-button">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                    View Live Project
+                                </a>
+                            `,
+                            images: [
+                                // { src: "assets/images/cgpa_screenshot.jpeg", caption: "Screenshot of the CGPA Calculator interface." },
+                            ]
+                        }
+                    },
+                    // New Project 2: Self-Portfolio
+                    {
+                        id: "self_portfolio",
+                        name: "Portfolio",
+                        summary: "The very portfolio you are viewing, built from scratch using modern web technologies.",
+                        content: {
+                            title: "Portfolio",
+                            details: `
+                                <p class="text-gray-300 mb-4">This entire interactive portfolio is a project in itself. It was designed to be a highly functional, single-page application (SPA) style portfolio, demonstrating my front-end development, UI/UX design, and JavaScript proficiency.</p>
+                                
+                                <h4 class="text-xl font-bold text-primary mt-6 mb-2">Core Features:</h4>
+                                <ul class="list-disc list-inside text-gray-300 space-y-2 ml-4">
+                                    <li>Technology:Pure HTML5, Tailwind CSS (for utility-first styling), and JavaScript (for interactivity and dynamic content loading).</li>
+                                    <li>Dynamic Navigation:Implements a JavaScript-based routing and history stack for smooth, SPA-like navigation between sections without full page reloads.</li>
+                                    <li>Responsive Design:Optimized for seamless viewing on desktop, tablet, and mobile devices.</li>
+                                    <li>Vibrant Dark Theme: Utilizes a custom dark theme palette for a modern, professional look.</li>
+                                </ul>
+                                <p class="mt-4 text-gray-300 font-medium">This project showcases my ability to implement custom interactive features and manage complex DOM manipulation.</p>
+                                
+                                <a href="https://suvedha1701.github.io/my-portfolio/" target="_blank" class="project-button">
+                                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.492.997.107-.775.418-1.305.762-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.29-1.552 3.295-1.23 3.295-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                                    View Source Code (GitHub)
+                                </a>
+                            `,
+                            images: []
+                        }
+                    },
+                    // Existing Project 1
                     {
                         id: "temp_fan_regulator",
                         name: "Temperature-Based Fan Speed Regulator",
@@ -361,6 +453,7 @@
                             ]
                         }
                     },
+                    // Existing Project 2
                     {
                         id: "smart_parking_system",
                         name: "Smart Car Parking and Gas Leakage Alert System",
